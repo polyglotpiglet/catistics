@@ -3,20 +3,29 @@ package com.ojha.core
 
 object MatrixUtil {
 
-  type Matrix[T <: Numeric] = IndexedSeq[IndexedSeq[T]]
+  import MatrixImplicits._
 
-  def determinant[T](m: Matrix[T])(implicit num: Numeric[T]): T = {
-    import num._
+  type Matrix = IndexedSeq[IndexedSeq[Double]]
+
+  def inverse(matrix: Matrix): Matrix = {
+    val adjugate = matrix.matrixOfMinors.matrixOfCofactors.adjugate
+    val inverseDeterminant = matrix.inverseDeterminant
+    adjugate.map(v1 => v1.map(v2 =>  v2 * inverseDeterminant)).toDps(2)
+  }
+
+  def determinant(m: Matrix): Double = {
     (m.length, m.head.length) match {
       case (2,2) => m(0)(0) * m(1)(1) - m(0)(1) * m(1)(0)
       case (n1, n2) => m.head.zipWithIndex.map{
         case (v, i) if i % 2 == 0 => determinant(withoutRowAndCol(m, 0, i)) * v
-        case (v,i) => (determinant(withoutRowAndCol(m, 0, i)) * v) * (-1).asInstanceOf[T]
+        case (v,i) => (determinant(withoutRowAndCol(m, 0, i)) * v) * -1
       }.sum
     }
   }
 
-  def withoutRowAndCol[T](matrix: Matrix[T], row: Int, col: Int)(implicit num: Numeric[T]): Matrix[T] = {
+  def inverseDeterminant(matrix: Matrix): Double = 1 / matrix.determinant
+
+  def withoutRowAndCol(matrix: Matrix, row: Int, col: Int): Matrix = {
     matrix.zipWithIndex
       .filter(pair => pair._2 != row)
       .map(_._1).map(row => row.zipWithIndex.filter(pair => pair._2 != col).map(_._1))
@@ -27,7 +36,7 @@ object MatrixUtil {
      jth column from the matrix and calculate the determinant of the resultant n-1 x n-1 matrix.
      The (i,j)th element of the resultant matrix is this determinant.
    */
-  def matrixOfMinors[T](m: Matrix[T])(implicit num: Numeric[T]): Matrix[T] = {
+  def matrixOfMinors(m: Matrix): Matrix = {
     m.indices.map(row => m.head.indices.map(col => determinant(withoutRowAndCol(m, row, col))))
   }
 
@@ -40,12 +49,11 @@ object MatrixUtil {
      ...
 
    */
-  def matrixOfCofactors[T](m: Matrix[T])(implicit num: Numeric[T]): Matrix[T] = {
-    import num._
+  def matrixOfCofactors(m: Matrix): Matrix = {
     m.indices.map(rowIndex => m.head.indices.map(colIndex => {
       colIndex + rowIndex match {
         case i if (i%2) == 0 => m(rowIndex)(colIndex)
-        case _ => (m(rowIndex)(colIndex).toDouble() * -1).asInstanceOf[T]
+        case _ => m(rowIndex)(colIndex) * -1
       }
     }))
   }
@@ -53,16 +61,19 @@ object MatrixUtil {
   /*
     Reflect matrix across the diagonal axis
    */
-  def adjugate[T](m: Matrix[T])(implicit num: Numeric[T]): Matrix[T] = {
-
-    m
-
+  def adjugate(m: Matrix): Matrix = {
+    m.indices.map(rowIndex => m.head.indices.map(colIndex => {
+      (rowIndex, colIndex) match {
+        case (r,c) if r == c => m(r)(c)
+        case (r,c) => m(c)(r)
+      }
+    }))
   }
 
-  def multiply[T](m1: Matrix[T], m2: Matrix[T])(implicit num: Numeric[T]): Matrix[T] = {
-    import num._
+  def multiply(m1: Matrix, m2: Matrix): Matrix = {
     m1.indices.map(row => m2.head.indices.map(col =>  (m1(row), m2.map(m => m(col))).zipped.map(_ * _ ).sum ))
   }
 
-  def transpose[T](x: Matrix[T]): Matrix[T] = x.head.indices.map(i => x.map(a => a(i)).toIndexedSeq )
+  def transpose(x: Matrix): Matrix = x.head.indices.map(i => x.map(a => a(i)).toIndexedSeq )
+
 }
