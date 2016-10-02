@@ -70,6 +70,16 @@ class MatrixUtilSpec extends FlatSpec {
     assert(14 == MatrixUtil.determinant(m))
   }
 
+  it should "calculate the determinant of a 3x3 matrix" in {
+    val m = IndexedSeq(
+      IndexedSeq(3,0,2),
+      IndexedSeq(2,0,-2),
+      IndexedSeq(0,1,1)
+    )
+
+    assert(10 == MatrixUtil.determinant(m))
+  }
+
   it should "calculate the matrix of minors of a 3x3 matrix" in {
     val m = IndexedSeq(
       IndexedSeq(3,0,2),
