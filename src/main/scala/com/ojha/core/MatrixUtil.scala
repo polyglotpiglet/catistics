@@ -10,7 +10,7 @@ object MatrixUtil {
   def inverse(matrix: Matrix): Matrix = {
     val adjugate = matrix.matrixOfMinors.matrixOfCofactors.adjugate
     val inverseDeterminant = matrix.inverseDeterminant
-    adjugate.map(v1 => v1.map(v2 =>  v2 * inverseDeterminant)).toDps(2)
+    adjugate.map(v1 => v1.map(v2 =>  v2 * inverseDeterminant))
   }
 
   def determinant(m: Matrix): Double = {

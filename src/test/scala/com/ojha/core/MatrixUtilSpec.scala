@@ -130,6 +130,7 @@ class MatrixUtilSpec extends FlatSpec {
   }
 
   it should "calculate the inverse of a 3x3 matrix" in {
+    import MatrixImplicits._
     val m: Matrix = IndexedSeq(
       IndexedSeq(3,0,2),
       IndexedSeq(2,0,-2),
@@ -142,7 +143,7 @@ class MatrixUtilSpec extends FlatSpec {
       IndexedSeq(0.2, -0.3, 0)
     )
 
-    assert(expected == MatrixUtil.inverse(m))
+    assert(expected == MatrixUtil.inverse(m).toDps(2))
   }
 
 
