@@ -74,6 +74,6 @@ object MatrixUtil {
     m1.indices.map(row => m2.head.indices.map(col =>  (m1(row), m2.map(m => m(col))).zipped.map(_ * _ ).sum ))
   }
 
-  def transpose(x: Matrix): Matrix = x.head.indices.map(i => x.map(a => a(i)).toIndexedSeq )
+  def transpose(x: Matrix): Matrix = x.head.indices.map(i => x.map(a => a(i)).toIndexedSeq)
 
 }

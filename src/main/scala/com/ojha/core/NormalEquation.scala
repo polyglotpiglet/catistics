@@ -14,8 +14,18 @@ object NormalEquation extends App {
 
   val yT: Matrix = IndexedSeq(IndexedSeq(10,20,60,40,50))
 
-  val x = xT.transpose
-  val y = yT.transpose
-  (((xT dot x).inverse dot xT) dot y).print
+  def solve(x: Matrix, y: Matrix): Matrix = {
+    val xT = x.transpose
+    val yT = y.transpose
+    ((xT dot x).inverse dot xT) dot y
+  }
+
+
+
+  val X: Matrix = IndexedSeq(IndexedSeq(1, 1.1, 0.8, 0.2, 1.2, 0.9, 1.1, 1.2, 0.4, 0.7, 0.8, 0.6))
+  val Y: Matrix = IndexedSeq(IndexedSeq(0.8, 1.0, 0.7, 0.4, 1.1, 1.1, 1.3, 1.0, 0.5, 0.8, 0.6, 0.75))
+
+  solve(X, Y).print
+
 
 }
